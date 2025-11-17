@@ -12,7 +12,17 @@ const port = process.env.PORT || 3000 // Set the port
 const app = express()
 // Register the public directory
 app.use(express.static(__dirname + '/public'));
-@@ -22,6 +26,9 @@ app.listen(port, () => console.log(`Server listening on port ${port}`))
+// register the routes
+app.get('/products', listProducts)
+app.get('/', handleRoot);
+// Boot the server
+app.listen(port, () => console.log(`Server listening on port ${port}`))
+
+/**
+ * Handle the root route
+ * @param {object} req
+ * @param {object} res
+*/
 function handleRoot(req, res) {
   res.sendFile(path.join(__dirname, '/index.html'));
 }
@@ -22,11 +32,17 @@ app.use(bodyParser.json()) // Parse JSON request bodies
 
 /**
  * List all products
-@@ -36,4 +43,16 @@ async function listProducts(req, res) {
+ * @param {object} req
+ * @param {object} res
+ */
+async function listProducts(req, res) {
+  const productsFile = path.join(__dirname, 'data/full-products.json')
+  try {
+    const data = await fs.readFile(productsFile)
+    res.json(JSON.parse(data))
   } catch (err) {
     res.status(500).json({ error: err.message })
   }
-}
 } 
 // Defining all the routes
 app.get('/products', api.listProducts) // Get all products
